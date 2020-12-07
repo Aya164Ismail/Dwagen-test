@@ -29,7 +29,7 @@ namespace Dwagen.Controllers
         /// <param name="addUserDto"></param>
         /// <returns></returns>
         [HttpPost("AddUser")]
-        public async Task<IActionResult> AddUser([FromBody] AddUserDto addUserDto)
+        public async Task<IActionResult> AddUser([FromForm] AddUserDto addUserDto)
         {
             try
             {

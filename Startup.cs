@@ -84,6 +84,7 @@ namespace Dwagen
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "swagger Demo API");
             });
+
         }
     }
 }

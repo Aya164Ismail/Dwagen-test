@@ -5,8 +5,10 @@ using Dwagen.Model.Entities;
 using Dwagen.Repository;
 using Dwagen.Repository.UnitOfWork;
 using Dwagen.Services.Interface;
+using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,11 +18,13 @@ namespace Dwagen.Services.implementation
     {
         private IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _hostEnvironment = webHostEnvironment;
         }
         public async Task<CreationState> AddUserAsnc(AddUserDto addUserDto)
         {
@@ -33,6 +37,13 @@ namespace Dwagen.Services.implementation
                 await _unitOfWork.UserRepository.CreateAsync(newUser);
                 creationState.IsCreatedSuccessfully = await _unitOfWork.SaveAsync() > 0;
                 creationState.CreatedObjectId = newUser.Id;
+
+                string extention = Path.GetExtension(addUserDto.File.FileName);
+                string path = _hostEnvironment.WebRootPath + "/Uploads/" + newUser.Id + extention;
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await addUserDto.File.CopyToAsync(stream);
+                }
             }
             else
             {

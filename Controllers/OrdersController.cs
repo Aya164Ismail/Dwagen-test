@@ -24,7 +24,7 @@ namespace Dwagen.Controllers
         /// </summary>
         /// <param name="addOrderDto"></param>
         /// <returns></returns>
-        [HttpPost("AddProduct")]
+        [HttpPost("AddOrder")]
         public async Task<IActionResult> AddOrder([FromBody] AddOrderDto addOrderDto)
         {
             try
