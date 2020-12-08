@@ -17,6 +17,7 @@ using Dwagen.Repository.Interface;
 using Dwagen.Repository.implementation;
 using Dwagen.Services.Interface;
 using Dwagen.Services.implementation;
+using Microsoft.AspNetCore.Identity;
 
 namespace Dwagen
 {
@@ -58,6 +59,9 @@ namespace Dwagen
 
             services.AddTransient<DwagenContext>();
 
+            //Use identity in application
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<DwagenContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,7 +75,8 @@ namespace Dwagen
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

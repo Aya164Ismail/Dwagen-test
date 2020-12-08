@@ -7,7 +7,7 @@ using Dwagen.Model.BaseService;
 
 namespace Dwagen.Model.Entities
 {
-    public class Users : BaseEntity
+    public class UsersProfile : BaseEntity
     {
         public string NumberPhone { get; set; }
         public string UserName { get; set; }

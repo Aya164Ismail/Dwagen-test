@@ -12,12 +12,12 @@ namespace Dwagen.Mapping
     {
         public void UserMapping()
         {
-            CreateMap<AddUserDto, Users>()
+            CreateMap<AddUserDto, UsersProfile>()
                 .ReverseMap();
 
-            CreateMap<LoginUserDto, Users>().ReverseMap();
+            CreateMap<LoginUserDto, UsersProfile>().ReverseMap();
 
-            CreateMap<UserDto, Users>().ReverseMap();
+            CreateMap<UserDto, UsersProfile>().ReverseMap();
 
         }
     }

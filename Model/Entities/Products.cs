@@ -18,6 +18,6 @@ namespace Dwagen.Model.Entities
         //## Relation starts ##
         public Guid? UserId { get; set; }
         [ForeignKey(nameof(UserId))]
-        public Users Users { get; set; }
+        public UsersProfile UsersProfile { get; set; }
     }
 }

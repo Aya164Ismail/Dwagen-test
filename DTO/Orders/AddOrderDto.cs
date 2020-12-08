@@ -17,8 +17,6 @@ namespace Dwagen.DTO.Orders
         public DeliveryState DeliveryState { get; set; }
 
         public Guid? ProductId { get; set; }
-        public ProductDto Products { get; set; }
         public Guid? UserId { get; set; }
-        public UserDto Users { get; set; }
     }
 }

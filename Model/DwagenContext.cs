@@ -1,4 +1,5 @@
 ﻿using Dwagen.Model.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Dwagen.Model
 {
-    public class DwagenContext : DbContext
+    public class DwagenContext : IdentityDbContext
     {
         public string ConnectionType = "DefaultConnection";
         public DwagenContext()
@@ -20,8 +21,8 @@ namespace Dwagen.Model
         }
 
         public DbSet<Products> Products { get; set; }
-        public DbSet<Users> Users { get; set; }
         public DbSet<Orders> Orders { get; set; }
+        public DbSet<UsersProfile> UsersProfile { get; set; }
         /// <summary>
         /// Override this method to configure the database (and other options) to be used for this context.
         /// </summary>
@@ -37,6 +38,6 @@ namespace Dwagen.Model
                 optionsBuilder.UseSqlServer(configuration[$"ConnectionStrings:{ConnectionType}"], options => options.EnableRetryOnFailure());
             }
         }
-       
+        
     }
 }

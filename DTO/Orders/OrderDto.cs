@@ -20,6 +20,6 @@ namespace Dwagen.DTO.Orders
         public Guid? ProductId { get; set; }
         public ProductDto Products { get; set; }
         public Guid? UserId { get; set; }
-        public UserDto Users { get; set; }
+        public UserDto UsersProfile { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace Dwagen.Services.implementation
             var checkUsersAddedBefore = await _unitOfWork.UserRepository.FindElementAsync(x => x.Email == addUserDto.Email || x.NumberPhone == addUserDto.NumberPhone);
             if(checkUsersAddedBefore == null)
             {
-                var newUser = _mapper.Map<AddUserDto, Users>(addUserDto);
+                var newUser = _mapper.Map<AddUserDto, UsersProfile>(addUserDto);
                 await _unitOfWork.UserRepository.CreateAsync(newUser);
                 creationState.IsCreatedSuccessfully = await _unitOfWork.SaveAsync() > 0;
                 creationState.CreatedObjectId = newUser.Id;
@@ -58,7 +58,7 @@ namespace Dwagen.Services.implementation
             var user = await _unitOfWork.UserRepository.FindByIdAsync(userId);
             if(user != null)
             {
-                var userDto = _mapper.Map<Users, UserDto>(user);
+                var userDto = _mapper.Map<UsersProfile, UserDto>(user);
                 return userDto;
             }
             return null;
@@ -69,7 +69,7 @@ namespace Dwagen.Services.implementation
             var user = await _unitOfWork.UserRepository.GetAllUsers(include);
             if (user != null)
             {
-                var userDto = _mapper.Map<IEnumerable<Users>, IEnumerable<UserDto>>(user);
+                var userDto = _mapper.Map<IEnumerable<UsersProfile>, IEnumerable<UserDto>>(user);
                 return userDto;
             }
             return null;

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Dwagen.Repository.Interface
 {
-    public interface IUserRepository : IGenericRepository<Users>
+    public interface IUserRepository : IGenericRepository<UsersProfile>
     {
         /// <summary>
         /// get all users in the system
         /// </summary>
         /// <param name="include"></param>
         /// <returns></returns>
-        Task<IEnumerable<Users>> GetAllUsers(string include);
+        Task<IEnumerable<UsersProfile>> GetAllUsers(string include);
     }
 }
