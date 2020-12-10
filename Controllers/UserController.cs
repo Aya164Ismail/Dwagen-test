@@ -34,7 +34,7 @@ namespace Dwagen.Controllers
             try
             {
                 _logger.LogInformation("Adding New User");
-                var result = await _userService.AddUserAsnc(addUserDto);
+                var result = await _userService.AddUserAsync(addUserDto);
                 if (result.IsCreatedSuccessfully)
                 {
                     return Ok(result);

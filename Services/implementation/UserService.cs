@@ -6,6 +6,7 @@ using Dwagen.Repository;
 using Dwagen.Repository.UnitOfWork;
 using Dwagen.Services.Interface;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,19 +20,23 @@ namespace Dwagen.Services.implementation
         private IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _hostEnvironment;
-
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment webHostEnvironment
+                            , UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _hostEnvironment = webHostEnvironment;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
         public async Task<CreationState> AddUserAsnc(AddUserDto addUserDto)
         {
             var creationState = new CreationState { IsCreatedSuccessfully = false, CreatedObjectId = null };
 
             var checkUsersAddedBefore = await _unitOfWork.UserRepository.FindElementAsync(x => x.Email == addUserDto.Email || x.NumberPhone == addUserDto.NumberPhone);
-            if(checkUsersAddedBefore == null)
+            if (checkUsersAddedBefore == null)
             {
                 var newUser = _mapper.Map<AddUserDto, UsersProfile>(addUserDto);
                 await _unitOfWork.UserRepository.CreateAsync(newUser);
@@ -56,7 +61,7 @@ namespace Dwagen.Services.implementation
         public async Task<UserDto> GetUserById(Guid userId)
         {
             var user = await _unitOfWork.UserRepository.FindByIdAsync(userId);
-            if(user != null)
+            if (user != null)
             {
                 var userDto = _mapper.Map<UsersProfile, UserDto>(user);
                 return userDto;
@@ -79,11 +84,52 @@ namespace Dwagen.Services.implementation
         {
             //get user that mathes email or phoneNamber and password
             var getuser = await _unitOfWork.UserRepository.FindElementAsync(x => (x.Email == loginUserDto.Email || x.NumberPhone == x.NumberPhone) && x.Password == x.Password);
-            if(getuser != null)
+            if (getuser != null)
             {
                 return true;
             }
             return false;
+        }
+
+        public async Task<CreationState> AddUserAsync(AddUserDto addUserDto)
+        {
+            var creationState = new CreationState { IsCreatedSuccessfully = false, CreatedObjectId = null };
+            try
+            {
+                //Identity User Mapping
+                var newUser = _mapper.Map<AddUserDto, IdentityUser>(addUserDto);
+                //Adding User
+                var result = await _userManager.CreateAsync(newUser, addUserDto.Password);
+                //Check  If User Added 
+                if (result.Succeeded)
+                {
+                    var userId = Guid.Parse(await _userManager.GetUserIdAsync(newUser));
+                    creationState.IsCreatedSuccessfully = true;
+                    creationState.CreatedObjectId = userId;
+                    if(addUserDto.File != null)
+                    {
+                        string extention = Path.GetExtension(addUserDto.File.FileName);
+                        string path = _hostEnvironment.WebRootPath + "/Uploads/" + newUser.Id + extention;
+                        using (var stream = new FileStream(path, FileMode.Create))
+                        {
+                            await addUserDto.File.CopyToAsync(stream);
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    foreach (IdentityError item in result.Errors)
+                    {
+                        creationState.ErrorMessages.Add(item.Description);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                creationState.ErrorMessages.Add(ex.Message);
+            }
+            return creationState;
         }
     }
 }

@@ -37,5 +37,12 @@ namespace Dwagen.Services.Interface
         /// <param name="loginUserDto"></param>
         /// <returns></returns>
         Task<bool> LoginUser(LoginUserDto loginUserDto);
+
+        /// <summary>
+        /// Identity
+        /// </summary>
+        /// <param name="UserDto"></param>
+        /// <returns></returns>
+        Task<CreationState> AddUserAsync(AddUserDto UserDto);
     }
 }
