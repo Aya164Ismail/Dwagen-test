@@ -7,10 +7,15 @@ using Dwagen.Repository.UnitOfWork;
 using Dwagen.Services.Interface;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Dwagen.Services.implementation
@@ -22,20 +27,22 @@ namespace Dwagen.Services.implementation
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         public UserService(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment webHostEnvironment
-                            , UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+                            , UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _hostEnvironment = webHostEnvironment;
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
         public async Task<CreationState> AddUserAsnc(AddUserDto addUserDto)
         {
             var creationState = new CreationState { IsCreatedSuccessfully = false, CreatedObjectId = null };
 
-            var checkUsersAddedBefore = await _unitOfWork.UserRepository.FindElementAsync(x => x.Email == addUserDto.Email || x.NumberPhone == addUserDto.NumberPhone);
+            var checkUsersAddedBefore = await _unitOfWork.UserRepository.FindElementAsync(x => x.Email == addUserDto.Email || x.NumberPhone == addUserDto.PhoneNumber);
             if (checkUsersAddedBefore == null)
             {
                 var newUser = _mapper.Map<AddUserDto, UsersProfile>(addUserDto);
@@ -130,6 +137,61 @@ namespace Dwagen.Services.implementation
                 creationState.ErrorMessages.Add(ex.Message);
             }
             return creationState;
+        }
+
+        public async Task<LoginStateDto> LoginAsync(LoginUserDto loginModel)
+        {
+            var loginState = new LoginStateDto { LoginSuccessfully = false, Token = null };
+
+            var user = await _userManager.FindByEmailAsync(loginModel.Email);
+           
+            if (user != null)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, loginModel.Password, true, false);
+                if (result.Succeeded)
+                {
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var authClaims = new List<Claim>
+                    {
+                          new Claim(ClaimTypes.Name, user.UserName),
+                          new Claim("ProfileId", user.Id.ToString()),
+                          new Claim(JwtRegisteredClaimNames.Jti, user.Id),
+                    };
+
+                    foreach (var userRole in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                        var role = await _roleManager.FindByNameAsync(userRole);
+                        var roleclaims = await _roleManager.GetClaimsAsync(role);
+                        foreach (var item in roleclaims)
+                        {
+                            authClaims.Add(new Claim(item.Type, item.Value));
+                        }
+                    }
+                    //var secretBytes = Encoding.UTF8.GetBytes(Constants.Secret);
+                    //var key = new SymmetricSecurityKey(secretBytes);
+                    //var algorithm = SecurityAlgorithms.HmacSha256;
+
+                    //var signingCredentials = new SigningCredentials(key, algorithm);
+
+                    //var token = new JwtSecurityToken(
+                    //    Constants.Issuer,
+                    //    Constants.Audiance,
+                    //    authClaims,
+                    //    notBefore: DateTime.Now,
+                    //    expires: DateTime.Now.AddDays(2),
+                    //    signingCredentials);
+
+
+                    //var tokenJson = new JwtSecurityTokenHandler().WriteToken(token);
+
+                    //loginState.LoginSuccessfully = true;
+                    //loginState.Token = tokenJson;
+                    //loginState.Permissions = authClaims;
+                    //loginState.ErrorMessage = null;
+                }
+            }
+            return loginState;
         }
     }
 }

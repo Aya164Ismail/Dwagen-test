@@ -9,7 +9,7 @@ namespace Dwagen.DTO.Users
 {
     public class AddUserDto
     {
-        public string NumberPhone { get; set; }
+        public string PhoneNumber { get; set; }
         public string UserName { get; set; }
 
         [EmailAddress]

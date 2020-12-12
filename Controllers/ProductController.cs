@@ -1,5 +1,6 @@
 ﻿using Dwagen.DTO.Products;
 using Dwagen.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Dwagen.Controllers
 {
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
