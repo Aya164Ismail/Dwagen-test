@@ -11,9 +11,16 @@ namespace Dwagen.Repository.implementation
 {
     public class OrderRepository : GenericRepository<Orders>, IOrderRepository
     {
+
         public OrderRepository(DwagenContext context)
             : base(context)
         {
+        }
+
+        public async Task<Orders> GetOrdersAsync(Guid orderId)
+        {
+            return await _context.Orders.FindAsync(orderId);
+            
         }
     }
 }

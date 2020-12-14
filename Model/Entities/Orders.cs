@@ -12,9 +12,11 @@ namespace Dwagen.Model.Entities
     {
         public int OrderQuantity { get; set; }
         public DateTime DeliveryDate { get; set; }
-        public int OrderPrice { get; set; }
+        public float OrderPrice { get; set; }
         public OrderStatues OrderStatues { get; set; }
         public DeliveryState DeliveryState { get; set; }
+        public float? KiloOfOrder { get; set; }
+        public float Shipping { get; set; }
 
         //### Relation starts ###
         public Guid? ProductId { get; set; }

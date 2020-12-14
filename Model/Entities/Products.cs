@@ -12,8 +12,9 @@ namespace Dwagen.Model.Entities
     {
         public string ProductName { get; set; }
         public ProductCategory ProductCategory { get; set; }
+        public float? KiloOfProduct { get; set; }
         public int ProductQuantity { get; set; }
-        public int ProductPrice { get; set; }
+        public float ProductPrice { get; set; }
 
         //## Relation starts ##
         public Guid? UserId { get; set; }
