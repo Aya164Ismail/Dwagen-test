@@ -130,9 +130,7 @@ namespace Dwagen.Services.implementation
                                 await addUserDto.File.CopyToAsync(stream);
                             }
                         }
-
                     }
-
                     else
                     {
                         foreach (IdentityError item in result.Errors)

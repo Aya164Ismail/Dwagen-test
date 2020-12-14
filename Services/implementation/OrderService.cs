@@ -31,6 +31,26 @@ namespace Dwagen.Services.implementation
             if(orderDto.OrderQuantity <= product.ProductQuantity)
             {
                 var newOrder = _mapper.Map<AddOrderDto, Orders>(orderDto);
+                // if user choose chicken
+                if(product.ProductCategory == ProductCategory.Chicken && product.KiloOfProduct >= orderDto.KiloOfOrder)
+                {
+                    newOrder.OrderPrice = (float)(newOrder.KiloOfOrder * product.ProductPrice);
+                }
+                else
+                {
+                    creationState.ErrorMessages.Add("Dismatch Kilo of order in kilo in product");
+                }
+
+                // if user choose Chick
+                if(product.ProductCategory == ProductCategory.Chick && product.ProductQuantity >= newOrder.OrderQuantity)
+                {
+                    newOrder.OrderPrice = (float)(newOrder.OrderQuantity * product.ProductPrice);
+                }
+                else
+                {
+                    creationState.ErrorMessages.Add("Dismatch quantity of order in quantity in product");
+
+                }
                 await _unitOfWork.OrderRepository.CreateAsync(newOrder);
                 creationState.IsCreatedSuccessfully = await _unitOfWork.SaveAsync() > 0;
                 creationState.CreatedObjectId = newOrder.Id;

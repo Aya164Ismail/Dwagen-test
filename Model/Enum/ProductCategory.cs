@@ -8,7 +8,7 @@ namespace Dwagen.Model.Enum
     public enum ProductCategory
     {
         Chick,
-        chicken,
+        Chicken,
         Medicine,
         Grass,
         DomesticProduct
