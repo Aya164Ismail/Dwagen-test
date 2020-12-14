@@ -38,7 +38,7 @@ namespace Dwagen.Model
         public DbSet<Products> Products { get; set; }
         public DbSet<Orders> Orders { get; set; }
         public DbSet<UsersProfile> UsersProfile { get; set; }
-
+        public DbSet<Rates> Rates { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

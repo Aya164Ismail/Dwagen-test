@@ -42,7 +42,7 @@ namespace Dwagen.Services.implementation
         {
             var creationState = new CreationState { IsCreatedSuccessfully = false, CreatedObjectId = null };
 
-            var checkUsersAddedBefore = await _unitOfWork.UserRepository.FindElementAsync(x => x.Email == addUserDto.Email || x.NumberPhone == addUserDto.PhoneNumber);
+            var checkUsersAddedBefore = await _unitOfWork.UserRepository.FindElementAsync(x => x.Email == addUserDto.Email || x.PhoneNumber == addUserDto.PhoneNumber);
             if (checkUsersAddedBefore == null)
             {
                 var newUser = _mapper.Map<AddUserDto, UsersProfile>(addUserDto);
@@ -90,7 +90,7 @@ namespace Dwagen.Services.implementation
         public async Task<bool> LoginUser(LoginUserDto loginUserDto)
         {
             //get user that mathes email or phoneNamber and password
-            var getuser = await _unitOfWork.UserRepository.FindElementAsync(x => (x.Email == loginUserDto.Email || x.NumberPhone == x.NumberPhone) && x.Password == x.Password);
+            var getuser = await _unitOfWork.UserRepository.FindElementAsync(x => (x.Email == loginUserDto.Email || x.PhoneNumber == x.PhoneNumber) && x.Password == x.Password);
             if (getuser != null)
             {
                 return true;
@@ -104,32 +104,46 @@ namespace Dwagen.Services.implementation
             try
             {
                 //Identity User Mapping
-                var newUser = _mapper.Map<AddUserDto, IdentityUser>(addUserDto);
-                //Adding User
-                var result = await _userManager.CreateAsync(newUser, addUserDto.Password);
-                //Check  If User Added 
-                if (result.Succeeded)
+                var newUserIdentity = _mapper.Map<AddUserDto, IdentityUser>(addUserDto);
+                var checkUsersAddedBefore = await _unitOfWork.UserRepository.FindElementAsync(x => x.Email == addUserDto.Email || x.PhoneNumber == addUserDto.PhoneNumber);
+                if (checkUsersAddedBefore == null)
                 {
-                    var userId = Guid.Parse(await _userManager.GetUserIdAsync(newUser));
-                    creationState.IsCreatedSuccessfully = true;
-                    creationState.CreatedObjectId = userId;
-                    if(addUserDto.File != null)
+                    //Adding User
+                    var result = await _userManager.CreateAsync(newUserIdentity, addUserDto.Password);
+                    //Check  If User Added 
+                    if (result.Succeeded)
                     {
-                        string extention = Path.GetExtension(addUserDto.File.FileName);
-                        string path = _hostEnvironment.WebRootPath + "/Uploads/" + newUser.Id + extention;
-                        using (var stream = new FileStream(path, FileMode.Create))
+                        var userId = Guid.Parse(await _userManager.GetUserIdAsync(newUserIdentity));
+                        var newUser = _mapper.Map<AddUserDto, UsersProfile>(addUserDto);
+                        newUser.Id = userId;
+                        await _unitOfWork.UserRepository.CreateAsync(newUser);
+                        creationState.IsCreatedSuccessfully = await _unitOfWork.SaveAsync() > 0;
+                        creationState.CreatedObjectId = newUser.Id;
+
+                        creationState.CreatedObjectId = userId;
+                        if (addUserDto.File != null)
                         {
-                            await addUserDto.File.CopyToAsync(stream);
+                            string extention = Path.GetExtension(addUserDto.File.FileName);
+                            string path = _hostEnvironment.WebRootPath + "/Uploads/" + newUser.Id + extention;
+                            using (var stream = new FileStream(path, FileMode.Create))
+                            {
+                                await addUserDto.File.CopyToAsync(stream);
+                            }
+                        }
+
+                    }
+
+                    else
+                    {
+                        foreach (IdentityError item in result.Errors)
+                        {
+                            creationState.ErrorMessages.Add(item.Description);
                         }
                     }
-                    
                 }
                 else
                 {
-                    foreach (IdentityError item in result.Errors)
-                    {
-                        creationState.ErrorMessages.Add(item.Description);
-                    }
+                    creationState.ErrorMessages.Add("This user added before");
                 }
             }
             catch (Exception ex)

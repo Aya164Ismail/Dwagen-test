@@ -51,7 +51,7 @@ namespace Dwagen.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    NumberPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -178,8 +178,9 @@ namespace Dwagen.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProductCategory = table.Column<int>(type: "int", nullable: false),
+                    KiloOfProduct = table.Column<float>(type: "real", nullable: true),
                     ProductQuantity = table.Column<int>(type: "int", nullable: false),
-                    ProductPrice = table.Column<int>(type: "int", nullable: false),
+                    ProductPrice = table.Column<float>(type: "real", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProcessTime = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -202,9 +203,11 @@ namespace Dwagen.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrderQuantity = table.Column<int>(type: "int", nullable: false),
                     DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OrderPrice = table.Column<int>(type: "int", nullable: false),
+                    OrderPrice = table.Column<float>(type: "real", nullable: false),
                     OrderStatues = table.Column<int>(type: "int", nullable: false),
                     DeliveryState = table.Column<int>(type: "int", nullable: false),
+                    KiloOfOrder = table.Column<float>(type: "real", nullable: true),
+                    Shipping = table.Column<float>(type: "real", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -227,25 +230,55 @@ namespace Dwagen.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Rates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductRate = table.Column<int>(type: "int", nullable: false),
+                    DelevaryTimeRate = table.Column<int>(type: "int", nullable: false),
+                    Discription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProcessTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rates_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Rates_UsersProfile_UserId",
+                        column: x => x.UserId,
+                        principalTable: "UsersProfile",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "0de6803c-3d57-4eaa-a4d4-9c069293db9f", "af613194-887a-45c7-bcfe-ad56fd1d5c76", "Admin", "Admin" });
+                values: new object[] { "d5831e30-7af7-4582-bcc3-d3f00e99c57d", "f51ae439-c121-492a-a01c-6e4e7a46fbab", "Admin", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "a3373e86-55c0-4845-9fc2-b066fe8b7c59", 0, "4aa02729-73b1-469c-9979-679b0b86e1e0", null, false, false, null, null, "Admin", "AQAAAAEAACcQAAAAEFCPwfZjbsW5IE5SV1JyzmBa1pORhvHxbzF799+oPqqb1vHgUKtxqAjcL5rJw1NL0g==", null, false, "be0da8a8-b76c-4bf1-8c5d-3370f4deb548", false, "admin" });
+                values: new object[] { "5e5e071c-362b-4eec-b16b-bc2981085c6b", 0, "34d1597a-3172-4cc1-b6da-8d0db32bd37c", null, false, false, null, null, "Admin", "AQAAAAEAACcQAAAAEKv2RKbSUV5NSTlNFxopII7PRKapQtWMpVWjn4QImPjhXdVYvNzuzZBwHEJ6AkvJkQ==", null, false, "bc461219-a301-4246-896a-ad13c1895a9c", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "UsersProfile",
-                columns: new[] { "Id", "CreatedDate", "Earnings", "Email", "NumberPhone", "Password", "ProcessTime", "UserName", "Wallet" },
-                values: new object[] { new Guid("1a430575-777c-476c-870c-18bf9af657c5"), new DateTime(2020, 12, 8, 3, 50, 39, 131, DateTimeKind.Local).AddTicks(7170), 0, "Admin@gmail.com", "01122544788", "12345", new DateTime(2020, 12, 8, 3, 50, 39, 132, DateTimeKind.Local).AddTicks(7729), "Admin", 0 });
+                columns: new[] { "Id", "CreatedDate", "Earnings", "Email", "Password", "PhoneNumber", "ProcessTime", "UserName", "Wallet" },
+                values: new object[] { new Guid("bc5bc3e3-936b-4d38-bccd-fe3bd3988c81"), new DateTime(2020, 12, 14, 21, 30, 33, 222, DateTimeKind.Local).AddTicks(6466), 0, "Admin@gmail.com", "12345", "01122544788", new DateTime(2020, 12, 14, 21, 30, 33, 223, DateTimeKind.Local).AddTicks(9742), "Admin", 0 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "0de6803c-3d57-4eaa-a4d4-9c069293db9f", "a3373e86-55c0-4845-9fc2-b066fe8b7c59" });
+                values: new object[] { "d5831e30-7af7-4582-bcc3-d3f00e99c57d", "5e5e071c-362b-4eec-b16b-bc2981085c6b" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -300,6 +333,16 @@ namespace Dwagen.Migrations
                 name: "IX_Products_UserId",
                 table: "Products",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rates_ProductId",
+                table: "Rates",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rates_UserId",
+                table: "Rates",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -321,6 +364,9 @@ namespace Dwagen.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Rates");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

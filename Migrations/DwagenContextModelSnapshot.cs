@@ -17,7 +17,7 @@ namespace Dwagen.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("Dwagen.Model.Entities.Orders", b =>
                 {
@@ -34,8 +34,11 @@ namespace Dwagen.Migrations
                     b.Property<int>("DeliveryState")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderPrice")
-                        .HasColumnType("int");
+                    b.Property<float?>("KiloOfOrder")
+                        .HasColumnType("real");
+
+                    b.Property<float>("OrderPrice")
+                        .HasColumnType("real");
 
                     b.Property<int>("OrderQuantity")
                         .HasColumnType("int");
@@ -48,6 +51,9 @@ namespace Dwagen.Migrations
 
                     b.Property<Guid?>("ProductId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<float>("Shipping")
+                        .HasColumnType("real");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -70,6 +76,9 @@ namespace Dwagen.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<float?>("KiloOfProduct")
+                        .HasColumnType("real");
+
                     b.Property<DateTime>("ProcessTime")
                         .HasColumnType("datetime2");
 
@@ -79,8 +88,8 @@ namespace Dwagen.Migrations
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProductPrice")
-                        .HasColumnType("int");
+                    b.Property<float>("ProductPrice")
+                        .HasColumnType("real");
 
                     b.Property<int>("ProductQuantity")
                         .HasColumnType("int");
@@ -93,6 +102,42 @@ namespace Dwagen.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Dwagen.Model.Entities.Rates", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DelevaryTimeRate")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Discription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ProcessTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ProductRate")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Rates");
                 });
 
             modelBuilder.Entity("Dwagen.Model.Entities.UsersProfile", b =>
@@ -110,10 +155,10 @@ namespace Dwagen.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NumberPhone")
+                    b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ProcessTime")
@@ -132,13 +177,13 @@ namespace Dwagen.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1a430575-777c-476c-870c-18bf9af657c5"),
-                            CreatedDate = new DateTime(2020, 12, 8, 3, 50, 39, 131, DateTimeKind.Local).AddTicks(7170),
+                            Id = new Guid("bc5bc3e3-936b-4d38-bccd-fe3bd3988c81"),
+                            CreatedDate = new DateTime(2020, 12, 14, 21, 30, 33, 222, DateTimeKind.Local).AddTicks(6466),
                             Earnings = 0,
                             Email = "Admin@gmail.com",
-                            NumberPhone = "01122544788",
                             Password = "12345",
-                            ProcessTime = new DateTime(2020, 12, 8, 3, 50, 39, 132, DateTimeKind.Local).AddTicks(7729),
+                            PhoneNumber = "01122544788",
+                            ProcessTime = new DateTime(2020, 12, 14, 21, 30, 33, 223, DateTimeKind.Local).AddTicks(9742),
                             UserName = "Admin",
                             Wallet = 0
                         });
@@ -173,8 +218,8 @@ namespace Dwagen.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0de6803c-3d57-4eaa-a4d4-9c069293db9f",
-                            ConcurrencyStamp = "af613194-887a-45c7-bcfe-ad56fd1d5c76",
+                            Id = "d5831e30-7af7-4582-bcc3-d3f00e99c57d",
+                            ConcurrencyStamp = "f51ae439-c121-492a-a01c-6e4e7a46fbab",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
@@ -271,15 +316,15 @@ namespace Dwagen.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a3373e86-55c0-4845-9fc2-b066fe8b7c59",
+                            Id = "5e5e071c-362b-4eec-b16b-bc2981085c6b",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4aa02729-73b1-469c-9979-679b0b86e1e0",
+                            ConcurrencyStamp = "34d1597a-3172-4cc1-b6da-8d0db32bd37c",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "Admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFCPwfZjbsW5IE5SV1JyzmBa1pORhvHxbzF799+oPqqb1vHgUKtxqAjcL5rJw1NL0g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKv2RKbSUV5NSTlNFxopII7PRKapQtWMpVWjn4QImPjhXdVYvNzuzZBwHEJ6AkvJkQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "be0da8a8-b76c-4bf1-8c5d-3370f4deb548",
+                            SecurityStamp = "bc461219-a301-4246-896a-ad13c1895a9c",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -348,8 +393,8 @@ namespace Dwagen.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "a3373e86-55c0-4845-9fc2-b066fe8b7c59",
-                            RoleId = "0de6803c-3d57-4eaa-a4d4-9c069293db9f"
+                            UserId = "5e5e071c-362b-4eec-b16b-bc2981085c6b",
+                            RoleId = "d5831e30-7af7-4582-bcc3-d3f00e99c57d"
                         });
                 });
 
@@ -392,6 +437,21 @@ namespace Dwagen.Migrations
                     b.HasOne("Dwagen.Model.Entities.UsersProfile", "UsersProfile")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("UsersProfile");
+                });
+
+            modelBuilder.Entity("Dwagen.Model.Entities.Rates", b =>
+                {
+                    b.HasOne("Dwagen.Model.Entities.Products", "Products")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Dwagen.Model.Entities.UsersProfile", "UsersProfile")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Products");
 
                     b.Navigation("UsersProfile");
                 });

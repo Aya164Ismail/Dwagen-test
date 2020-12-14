@@ -41,7 +41,7 @@ namespace Dwagen.Model
                     Id = Guid.NewGuid(),
                     UserName = "Admin",
                     Email = "Admin@gmail.com",
-                    NumberPhone = "01122544788",
+                    PhoneNumber = "01122544788",
                     Password = "12345"
                 }
             );
